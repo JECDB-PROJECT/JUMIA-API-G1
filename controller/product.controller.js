@@ -48,7 +48,7 @@ exports.createProduct = (req, res) => {
       // sellerId: req.user.id,
       sellerId: req.sellerId,
       imagePath: filesPath, //
-      brand: req.body.brand,
+      ratings: req.body.ratings,
       category: req.body.category,
       // arcategory: req.body.arcategory,//
       subcategory: req.body.subcategory,
@@ -103,7 +103,7 @@ exports.updateProduct = (req, res) => {
         // sellerId: req.user.id,
         sellerId: req.sellerId,
         imagePath: filesPath, //
-        brand: req.body.brand,
+        ratings: req.body.ratings,
         category: req.body.category,
         // arcategory: req.body.arcategory,//
         subcategory: req.body.subcategory,
