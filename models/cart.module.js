@@ -33,3 +33,16 @@ const cartSchema = new mongoose.Schema(
 )
 
 module.exports = mongoose.model("Cart",cartSchema);
+
+/* {
+    "items":[
+        {
+        "productId":"642c1754ff89ab6980edd0a9",
+        "quantity":1,
+        "price":50,
+    },
+    "userId":"6425633cf68f40eb571fff5f",
+    "totalCount":1,
+    "totalPrice":50
+],
+} */

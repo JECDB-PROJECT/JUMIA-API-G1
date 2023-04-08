@@ -66,10 +66,10 @@ exports.changeQuantity = (req, res) => {
 
 //GET CART ITEMS FOR USER
 exports.getCartItems = (req, res) => {
-    Cart.findOne({ userId: req.user.id }, { items: 1, _id: 0 }, function (err, cart) {
+    Cart.find({}, function (err, cart) {
         if (err) res.status(400).send(err);
         res.status(200).send(cart);
-    });
+    }).populate('userId')
     
 };
 
@@ -108,11 +108,28 @@ exports.removeCart = (req, res) => {
 
 
 //GET CART BY USER ID
+// exports.getCart = (req, res) => {
+//     console.log("Received ID IS ----------> ",req.params.userId);
+//     Cart.findOne({userId:req.params.userId}, (err, cart) => {
+//         if(err){res.status(400).send(err)}
+//         if(cart){res.status(200).send(cart)}
+//     })
+// }
+// exports.getCart = (req, res) => {
+//     console.log("Received ID IS ----------> ",req.params.userId);
+//     Cart.findOne({userId:req.params.userId}).then((cart) => {
+//         console.log("response IS --------> ",cart);
+//         res.status(200).json(cart)
+//     }).catch((err) => {
+//         console.log("error IS --------> ",err);
+//         res.status(400).send(err);
+//     })
+// }
 exports.getCart = (req, res) => {
-    Cart.findOne({userId:req.params.userId}, (err, cart) => {
-        if(err){res.status(400).send(err)}
-        if(cart){res.status(200).send(cart)}
-    })
+    Cart.find({"`userId._id`":req.params.userId}, function (err, cart) {
+        //if (err) res.status(400).send(err);
+        res.status(200).send(cart);
+    }).populate('userId');
 }
 
 
