@@ -13,7 +13,7 @@ const router = require("express").Router();
 
 //without verify
 router.post("/addToCart", cart.addToCart);
-router.get("/", cart.getCartItems);
+router.get("/all", cart.getCartItems);
 router.get("/:userId", cart.getCart);
 router.put("/changeQuantity/:cartId/:productId", cart.changeQuantity);
 router.delete("/:productId", cart.deleteItemFromCart);

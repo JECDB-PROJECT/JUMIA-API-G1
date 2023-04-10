@@ -66,11 +66,11 @@ exports.changeQuantity = (req, res) => {
 
 //GET CART ITEMS FOR USER
 exports.getCartItems = (req, res) => {
-    Cart.findOne({ userId: req.user.id }, { items: 1, _id: 0 }, function (err, cart) {
+    Cart.find({}, function (err, cart) {
         if (err) res.status(400).send(err);
         res.status(200).send(cart);
     });
-
+    
 };
 
 
@@ -108,25 +108,11 @@ exports.removeCart = (req, res) => {
 
 
 //GET CART BY USER ID
-// exports.getCart = (req, res) => {
-//     Cart.findOne({userId:req.params.userId}, (err, cart) => {
-//         if(err){res.status(400).send(err)}
-//         if(cart){res.status(200).send(cart)}
-//     })
-// }
-
-
-
 exports.getCart = (req, res) => {
-
-    Cart.find({ "`userId._id`": req.params.userId }, function (err, cart) {
-
-        //if (err) res.status(400).send(err);
-
-        res.status(200).send(cart);
-
-    }).populate('userId');
-
+    Cart.findOne({userId:req.params.userId}, (err, cart) => {
+        if(err){res.status(400).send(err)}
+        if(cart){res.status(200).send(cart)}
+    })
 }
 
 
