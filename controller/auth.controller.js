@@ -6,32 +6,33 @@ const nodemailer = require('nodemailer');
 const MultipleFile = require('../models/multiplefile.module');
 const SingleFile = require('../models/singlefile.module');
 
-const message="Welcome as an JEC-Clown member"
+const message = "Welcome as an JEC-Clown member"
 //SIGN UP 
 exports.signUp = (req, res, next) => {
-    console.log(req.body)
+    console.log(req.body, "tewuwu")
     let validEmail = validator.isEmail(req.body.email);
     let validPass = validator.isStrongPassword(req.body.password);
     let validPhone = validator.isMobilePhone(req.body.phone, ['ar-EG']);
-    
-        User.findOne({ email: req.body.email })
-            .then(user => {
-                if (user)
-                    res.status(404).send('please try again')
-                else {
-                    console.log("data")
-                    const user = new User({
-                        name: req.body.name,
-                        email: req.body.email,
-                        phone: req.body.phone,
-                        password: bcrypt.hashSync(req.body.password, 10)
-                    })
-                    
-                    user.save()
-                        .then(data => {
-                            res.status(200).send([data, { message: "welcome  you are regitered successfully" }])
-                            // ===================================
-                            const output = `
+
+    User.findOne({ email: req.body.email })
+        .then(user => {
+            if (user) {
+                res.status(404).send('please try again')
+                console.log("ttttttttt");
+            } else {
+                console.log("data")
+                const user = new User({
+                    name: req.body.name,
+                    email: req.body.email,
+                    phone: req.body.phone,
+                    password: bcrypt.hashSync(req.body.password, 10)
+                })
+
+                user.save()
+                    .then(data => {
+                        res.status(200).send([data, { message: "welcome  you are regitered successfully" }])
+                        // ===================================
+                        const output = `
                         <p>You have a new contact request</p>
                         <h3>Contact Details</h3>
                         <ul>  
@@ -41,95 +42,97 @@ exports.signUp = (req, res, next) => {
                         <h3>Message</h3>
                         <p style="color :red;">${message}</p>
                                             `;
-                            let transporter = nodemailer.createTransport({
-                                service: "gmail",
-                                auth: {
-                                    user: "jumiaclown236@gmail.com",
-                                    pass: "jumia@123"
-                                }, tls: {
-                                    rejectUnauthorized: false,
-                                }
-                            })
-                            let mailOptions = {
-                                from: "jumiaclown236@gmail.com",
-                                to: req.body.email
-                                , subject: "Welcome you in Jumia"
-                                , text: "Welcome to Jumia"
-                                , html: output
+                        let transporter = nodemailer.createTransport({
+                            service: "gmail",
+                            auth: {
+                                user: "jumiaclown236@gmail.com",
+                                pass: "jumia@123"
+                            }, tls: {
+                                rejectUnauthorized: false,
                             }
-                            transporter
-                                .sendMail(mailOptions)
-                                .then((res) => {
-                                    console.log("Email sent successfully!!!", res);
-                                }).catch((err) => {
-                                    console.log(err);
-                                });
-                            // =========================================
-                        }).catch(err => {
-                            console.log(user)
-                            res.status(401).send([err, { message: "the Email in Used " }])
                         })
-                }
-            }).catch(err => {res.send(err)})
-    
+                        let mailOptions = {
+                            from: "jumiaclown236@gmail.com",
+                            to: req.body.email
+                            , subject: "Welcome you in Jumia"
+                            , text: "Welcome to Jumia"
+                            , html: output
+                        }
+                        transporter
+                            .sendMail(mailOptions)
+                            .then((res) => {
+                                console.log("Email sent successfully!!!", res);
+                            }).catch((err) => {
+                                console.log(err);
+                            });
+                        // =========================================
+                    }).catch(err => {
+                        console.log(user)
+                        res.status(401).send([err, { message: "the Email in Used " }])
+                    })
+            }
+        }).catch(err => { res.send(err, "yyyyyy") })
+
 }
 
 
 // LOGIN
 exports.login = (req, res) => {
-    User.findOne({ email: req.body.email},
-    function (err, user) {
-        if (err) {
-            return res.status(500).send("serever error");
-        } 
-        !user && res.status(401).json("Wrong User Email or Password..");
-        
-        if(!bcrypt.compareSync(req.body.password,user.password)) {
-            return res.status(401).send("Wrong Password or Email..");
-        }
-        if (!user.isAdmin) {
-            const userToken = jwt.sign({ id: user._id, isAdmin: user.isAdmin,
-                name: user.name ,email: user.email}, 
-                process.env.JWT_SEC, { expiresIn: "3d" });
-            jwt.verify(userToken, process.env.JWT_SEC, (err, userData) => {
-                if (userData) {
-                    console.log(userData)
-                    res.status(200).send({ sucess: true, token: userToken, user: user });
-                }
-            })
-        }else{
-            res.status(401).json("You'r not authenticated... ")
-        }
-    })
+    User.findOne({ email: req.body.email },
+        function (err, user) {
+            if (err) {
+                return res.status(500).send("serever error");
+            }
+            !user && res.status(401).json("Wrong User Email or Password..");
+
+            if (!bcrypt.compareSync(req.body.password, user.password)) {
+                return res.status(401).send("Wrong Password or Email..");
+            }
+            if (!user.isAdmin) {
+                const userToken = jwt.sign({
+                    id: user._id, isAdmin: user.isAdmin,
+                    name: user.name, email: user.email
+                },
+                    process.env.JWT_SEC, { expiresIn: "3d" });
+                jwt.verify(userToken, process.env.JWT_SEC, (err, userData) => {
+                    if (userData) {
+                        console.log(userData)
+                        res.status(200).send({ sucess: true, token: userToken, user: user });
+                    }
+                })
+            } else {
+                res.status(401).json("You'r not authenticated... ")
+            }
+        })
 };
 
 //for admin
 exports.adminLogin = (req, res) => {
-    User.findOne({ email: req.body.email }, 
-    function (err, user) {
-        if (err) {
-            return res.status(500).send("serever error");
-        }
-        if(!user){
-            return  res.status(401).json("Wrong User Email or Password")             
-        }
-        
-        if (!bcrypt.compareSync(req.body.password, user.password)) {
-            return res.status(404).json("Wrong User Email or Password...")
-        }
-        
-        if (user.isAdmin) {
-            console.log(user.isAdmin)
-            const userToken = jwt.sign({ id: user._id, isAdmin: user.isAdmin, name: user.name }, process.env.JWT_SEC, { expiresIn: "3d" });
-            jwt.verify(userToken, process.env.JWT_SEC, (err, userData) => {
-                if (userData) {
-                    return res.status(200).send({ sucess: true, token: userToken, user: user });
-                }
-            })
-        }else{
-            return res.status(403).send({error:"you are not allowed..."})
-        }
-    })
+    User.findOne({ email: req.body.email },
+        function (err, user) {
+            if (err) {
+                return res.status(500).send("serever error");
+            }
+            if (!user) {
+                return res.status(401).json("Wrong User Email or Password")
+            }
+
+            if (!bcrypt.compareSync(req.body.password, user.password)) {
+                return res.status(404).json("Wrong User Email or Password...")
+            }
+
+            if (user.isAdmin) {
+                console.log(user.isAdmin)
+                const userToken = jwt.sign({ id: user._id, isAdmin: user.isAdmin, name: user.name }, process.env.JWT_SEC, { expiresIn: "3d" });
+                jwt.verify(userToken, process.env.JWT_SEC, (err, userData) => {
+                    if (userData) {
+                        return res.status(200).send({ sucess: true, token: userToken, user: user });
+                    }
+                })
+            } else {
+                return res.status(403).send({ error: "you are not allowed..." })
+            }
+        })
 };
 
 
@@ -141,7 +144,7 @@ exports.logout = (req, res) => {
     } else {
         res.status(200).send("not found")
     }
-    
+
     console.log("finish logout...", req.headers["authorization"])
 }
 
@@ -191,12 +194,12 @@ exports.sellerSignUp = (req, res, next) => {
                         email: req.body.email,
                         phone: req.body.phone,
                         password: bcrypt.hashSync(req.body.password, 10),
-                        isSeller:true,
+                        isSeller: true,
                         // shop:req.body.shop
-                        shop:{
-                            shopName:req.body.shopName,
-                            logo:filesPath,
-                            description:req.body.description
+                        shop: {
+                            shopName: req.body.shopName,
+                            logo: filesPath,
+                            description: req.body.description
                         }
                     })
                     user.save()
@@ -243,7 +246,7 @@ exports.sellerSignUp = (req, res, next) => {
                             res.status(401).send([err, { message: "the Email is Used " }])
                         })
                 }
-            }).catch(err => {res.send(err)})
+            }).catch(err => { res.send(err) })
     } else {
         res.status(401).send({ message: "Not valid email or password or phone number please try again.." })
     }
@@ -253,41 +256,41 @@ exports.sellerSignUp = (req, res, next) => {
 ///SELLER SIGNIN
 exports.sellerLogin = (req, res) => {
     console.log("seller..", req.body);
-    User.findOne({ email: req.body.email }, 
-    function (err, user) {
-        if (err) {
-            return res.status(500).send("serever error");
-        }
-        if(!user){
-            return  res.status(401).json("Wrong User Email or Password")             
-        }
-        
-        if (!bcrypt.compareSync(req.body.password, user.password)) {
-            return res.status(404).json("Wrong User Email or Password...")
-        }
-        
-        if (user.isSeller) {
-            const userToken = jwt.sign({ id: user._id, isAdmin: user.isAdmin, name: user.name }, process.env.JWT_SEC, { expiresIn: "3d" });
-            jwt.verify(userToken, process.env.JWT_SEC, (err, userData) => {
-                if (userData) {
-                    return res.status(200).send({ sucess: true, token: userToken, user: user });
-                }
-            })
-        }else{
-            return res.status(403).send({error:"you are not allowed..."})
-        }
-    })
+    User.findOne({ email: req.body.email },
+        function (err, user) {
+            if (err) {
+                return res.status(500).send("serever error");
+            }
+            if (!user) {
+                return res.status(401).json("Wrong User Email or Password")
+            }
+
+            if (!bcrypt.compareSync(req.body.password, user.password)) {
+                return res.status(404).json("Wrong User Email or Password...")
+            }
+
+            if (user.isSeller) {
+                const userToken = jwt.sign({ id: user._id, isAdmin: user.isAdmin, name: user.name }, process.env.JWT_SEC, { expiresIn: "3d" });
+                jwt.verify(userToken, process.env.JWT_SEC, (err, userData) => {
+                    if (userData) {
+                        return res.status(200).send({ sucess: true, token: userToken, user: user });
+                    }
+                })
+            } else {
+                return res.status(403).send({ error: "you are not allowed..." })
+            }
+        })
 };
 
 //GOOGLE CRADENTIALS
 exports.googleSignUp = (req, res, next) => {
-    console.log("googleSignUp",req.body)
+    console.log("googleSignUp", req.body)
     let validEmail = validator.isEmail(req.body.email);
     if (validEmail) {
         User.findOne({ email: req.body.email })
             .then(user => {
                 if (user)
-                    res.status(200).send({message:'user is exist'})
+                    res.status(200).send({ message: 'user is exist' })
                 else {
                     console.log("data")
                     const user = new User({
@@ -305,7 +308,7 @@ exports.googleSignUp = (req, res, next) => {
                             res.status(401).send([err, { message: "the Email in Used " }])
                         })
                 }
-            }).catch(err => {res.send(err)})
+            }).catch(err => { res.send(err) })
     } else {
         res.status(401).send({ message: "Not valid email or password or phone number please try again.." })
     }
@@ -313,15 +316,17 @@ exports.googleSignUp = (req, res, next) => {
 
 
 exports.googleLogin = (req, res) => {
-    console.log("googleLogin",req.body)
-    User.findOne({ email: req.body.email},
-    function (err, user) {
-        if (err) {
-            return res.status(500).send("serever error");
-        } 
-        !user && res.status(401).json("Wrong Credentials...");
-            const userToken = jwt.sign({ id: user._id, isAdmin: user.isAdmin,
-                name: user.name ,email: user.email}, 
+    console.log("googleLogin", req.body)
+    User.findOne({ email: req.body.email },
+        function (err, user) {
+            if (err) {
+                return res.status(500).send("serever error");
+            }
+            !user && res.status(401).json("Wrong Credentials...");
+            const userToken = jwt.sign({
+                id: user._id, isAdmin: user.isAdmin,
+                name: user.name, email: user.email
+            },
                 process.env.JWT_SEC, { expiresIn: "3d" });
             jwt.verify(userToken, process.env.JWT_SEC, (err, userData) => {
                 if (userData) {
@@ -330,5 +335,5 @@ exports.googleLogin = (req, res) => {
                 }
             })
             console.log(user)
-    })
+        })
 };

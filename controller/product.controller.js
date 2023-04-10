@@ -422,7 +422,7 @@ exports.getAllProductFilter = async (req, res) => {
     const skip = req.query.skip || (page - 1) * pageSize;
     const pages = Math.ceil(total / pageSize); //page cont
 
-    query = query.skip(skip).limit(pageSize); //new quary which apper with skip and limit
+    query = query.skip(parseInt(skip) ).limit(pageSize); //new quary which apper with skip and limit
 
     if (page > pages) {
       //chick if pages is larger than i but

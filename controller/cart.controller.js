@@ -14,8 +14,8 @@ exports.addToCart = (req, res) => {
                             ...req.body.items,
                             quantity: item.quantity + req.body.items.quantity
                         },
-                        totalCount:req.body.totalCount,
-                        totalPrice:req.body.totalPrice
+                        totalCount: req.body.totalCount,
+                        totalPrice: req.body.totalPrice
                     }
                 }, (err, _cart) => {
                     if (err) { res.status(400).send(err) };
@@ -35,8 +35,8 @@ exports.addToCart = (req, res) => {
             const cart = new Cart({
                 items: req.body.items,
                 userId: req.user.id,
-                totalCount:req.body.totalCount,
-                totalPrice:req.body.totalPrice
+                totalCount: req.body.totalCount,
+                totalPrice: req.body.totalPrice
             })
             cart.save().then((cart) => {
                 res.status(200).send(cart);
@@ -70,7 +70,7 @@ exports.getCartItems = (req, res) => {
         if (err) res.status(400).send(err);
         res.status(200).send(cart);
     });
-    
+
 };
 
 
@@ -101,20 +101,33 @@ exports.deleteItemFromCart = (req, res) => {
 //DELETE CARTS
 exports.removeCart = (req, res) => {
     Cart.findByIdAndDelete(req.params.cartId, (err, cart) => {
-        if(err){res.status(400).send(err)}
-        if(cart){res.status(200).send([cart,"cart is deleted successfully..."])}
+        if (err) { res.status(400).send(err) }
+        if (cart) { res.status(200).send([cart, "cart is deleted successfully..."]) }
     })
 }
 
 
 //GET CART BY USER ID
-exports.getCart = (req, res) => {
-    Cart.findOne({userId:req.params.userId}, (err, cart) => {
-        if(err){res.status(400).send(err)}
-        if(cart){res.status(200).send(cart)}
-    })
-}
+// exports.getCart = (req, res) => {
+//     Cart.findOne({userId:req.params.userId}, (err, cart) => {
+//         if(err){res.status(400).send(err)}
+//         if(cart){res.status(200).send(cart)}
+//     })
+// }
 
+
+
+exports.getCart = (req, res) => {
+
+    Cart.find({ "`userId._id`": req.params.userId }, function (err, cart) {
+
+        //if (err) res.status(400).send(err);
+
+        res.status(200).send(cart);
+
+    }).populate('userId');
+
+}
 
 
 
