@@ -6,37 +6,37 @@ exports.addToCart = (req, res) => {
     Cart.findOne({ userId: req.user.id }, (err, cart) => {
         if (err) { res.status(400).send(err) }
         if (cart) {
-            const item = cart.items.find(elem => elem.productId == req.body.items.productId)
-            if (item) {
-                Cart.findOneAndUpdate({ "userId": req.user.id, "items.productId": req.body.items.productId }, {
-                    "$set": {
-                        "items.$": {
-                            ...req.body.items,
-                            quantity: item.quantity + req.body.items.quantity
-                        },
-                        totalCount: req.body.totalCount,
-                        totalPrice: req.body.totalPrice
-                    }
-                }, (err, _cart) => {
-                    if (err) { res.status(400).send(err) };
-                    if (_cart) { res.status(200).send(_cart) }
-                })
-            } else {
-                Cart.findOneAndUpdate({ userId: req.user.id }, {
-                    "$push": {
-                        "items": [req.body.items]
-                    }
-                }, (err, _cart) => {
-                    if (err) { res.status(400).send(err) };
-                    if (_cart) { res.status(200).send(_cart) }
-                })
-            }
+            // const item = cart.items.find(elem => elem.productId == req.body.items.productId)
+            // if (item) {
+            //     Cart.findOneAndUpdate({ "userId": req.user.id, "items.productId": req.body.items.productId }, {
+            //         "$set": {
+            //             "items.$": {
+            //                 ...req.body.items,
+            //                 quantity: item.quantity + req.body.items.quantity
+            //             },
+            //             totalCount: req.body.totalCount,
+            //             totalPrice: req.body.totalPrice
+            //         }
+            //     }, (err, _cart) => {
+            //         if (err) { res.status(400).send(err) };
+            //         if (_cart) { res.status(200).send(_cart) }
+            //     })
+            // } else {
+            Cart.findOneAndUpdate({ userId: req.user.id }, {
+                "$push": {
+                    "items": [req.body.items]
+                }
+            }, (err, _cart) => {
+                if (err) { res.status(400).send(err) };
+                if (_cart) { res.status(200).send(_cart) }
+            })
+            // }
         } else {
             const cart = new Cart({
-                items: req.body.items,
+                items: [req.body.items],
                 userId: req.user.id,
-                totalCount: req.body.totalCount,
-                totalPrice: req.body.totalPrice
+                // totalCount: req.body.totalCount,
+                // totalPrice: req.body.totalPrice
             })
             cart.save().then((cart) => {
                 res.status(200).send(cart);
@@ -44,7 +44,8 @@ exports.addToCart = (req, res) => {
                 res.status(400).send(err)
             })
         }
-    })
+    }
+    )
 }
 
 
@@ -66,28 +67,32 @@ exports.changeQuantity = (req, res) => {
 
 //GET CART ITEMS FOR USER
 exports.getCartItems = (req, res) => {
-    Cart.find({}, function (err, cart) {
+    Cart.find({ userId: req.user.id }, function (err, cart) {
         if (err) res.status(400).send(err);
         res.status(200).send(cart);
     });
-    
+
 };
 
 
 //REMOVE ITEM FORM CART
 exports.deleteItemFromCart = (req, res) => {
-    Cart.findOne({ userId: req.user.id }, (err, cart) => {
+    // console.log(req.user.id, req.params.productId)
+    Cart.find({ userId: req.user.id }, (err, cart) => {
         if (err) { res.status(400).send(err) }
         if (cart) {
-            const item = cart.items.find(elem => elem.productId == req.params.productId)
+            // console.log(cart)
+            const item = cart[0].items.find(elem => elem.productId == req.params.productId)
             if (item) {
-                Cart.findOneAndUpdate({ "userId": req.user.id, "items.productId": req.params.productId }, {
-                    "$pull":
+                console.log(item, req.params.cartId, req.params.productId)
+                Cart.updateMany({ _id: req.params.cartId }, {
+                    $pull:
                         { items: { productId: req.params.productId } }
                 }, (err, _cart) => {
                     if (_cart) { res.status(200).send(_cart) }
                     if (err) { res.status(400).send(err) };
                 })
+
             } else {
                 res.status(401).send("you don't have this product")
             }
@@ -109,10 +114,14 @@ exports.removeCart = (req, res) => {
 
 //GET CART BY USER ID
 exports.getCart = (req, res) => {
-    Cart.findOne({userId:req.params.userId}, (err, cart) => {
-        if(err){res.status(400).send(err)}
-        if(cart){res.status(200).send(cart)}
-    })
+    Cart.find({ userId: req.user.id }, function (err, cart) {
+        if (err) res.status(400).send(err);
+        res.status(200).send(cart);
+    }).populate("items.productId");
+    // Cart.findOne({ userId: req.user.id }, (err, cart) => {
+    //     if (err) { res.status(400).send(err) }
+    //     if (cart) { res.status(200).send(cart) }
+    // })
 }
 
 
