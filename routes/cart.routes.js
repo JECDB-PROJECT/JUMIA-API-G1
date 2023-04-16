@@ -7,7 +7,8 @@ const router = require("express").Router();
 router.post("/addToCart", verify.verifyToken, cart.addToCart);
 router.get("/", verify.verifyToken, cart.getCartItems);
 router.get("/userCart", verify.verifyToken, cart.getCart);
-router.put("/changeQuantity/:cartId/:productId", verify.verifyToken, cart.changeQuantity);
+router.put("/increaseQuantity/:cartId/:productId", verify.verifyToken, cart.increaseQuantity);
+router.put("/decreaseQuantity/:cartId/:productId", verify.verifyToken, cart.decreaseQuantity);
 router.delete("/:cartId/:productId", verify.verifyToken, cart.deleteItemFromCart);
 router.delete("/deleteCart/:cartId", cart.removeCart);
 

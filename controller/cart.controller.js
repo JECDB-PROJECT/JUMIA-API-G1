@@ -6,31 +6,31 @@ exports.addToCart = (req, res) => {
     Cart.findOne({ userId: req.user.id }, (err, cart) => {
         if (err) { res.status(400).send(err) }
         if (cart) {
-            // const item = cart.items.find(elem => elem.productId == req.body.items.productId)
-            // if (item) {
-            //     Cart.findOneAndUpdate({ "userId": req.user.id, "items.productId": req.body.items.productId }, {
-            //         "$set": {
-            //             "items.$": {
-            //                 ...req.body.items,
-            //                 quantity: item.quantity + req.body.items.quantity
-            //             },
-            //             totalCount: req.body.totalCount,
-            //             totalPrice: req.body.totalPrice
-            //         }
-            //     }, (err, _cart) => {
-            //         if (err) { res.status(400).send(err) };
-            //         if (_cart) { res.status(200).send(_cart) }
-            //     })
-            // } else {
-            Cart.findOneAndUpdate({ userId: req.user.id }, {
-                "$push": {
-                    "items": [req.body.items]
-                }
-            }, (err, _cart) => {
-                if (err) { res.status(400).send(err) };
-                if (_cart) { res.status(200).send(_cart) }
-            })
-            // }
+            const item = cart.items.find(elem => elem.productId == req.body.items.productId)
+            if (item) {
+                Cart.findOneAndUpdate({ "userId": req.user.id, "items.productId": req.body.items.productId }, {
+                    "$set": {
+                        "items.$": {
+                            ...req.body.items,
+                            quantity: item.quantity + 1
+                        },
+                        totalCount: req.body.totalCount,
+                        totalPrice: req.body.totalPrice
+                    }
+                }, (err, _cart) => {
+                    if (err) { res.status(400).send(err) };
+                    if (_cart) { res.status(200).send(_cart) }
+                })
+            } else {
+                Cart.findOneAndUpdate({ userId: req.user.id }, {
+                    "$push": {
+                        "items": [req.body.items]
+                    }
+                }, (err, _cart) => {
+                    if (err) { res.status(400).send(err) };
+                    if (_cart) { res.status(200).send(_cart) }
+                })
+            }
         } else {
             const cart = new Cart({
                 items: [req.body.items],
@@ -51,9 +51,22 @@ exports.addToCart = (req, res) => {
 
 //Change QUANTITY OF PRODUCT IN CART
 //check stock..
-exports.changeQuantity = (req, res) => {
+exports.increaseQuantity = (req, res) => {
     Cart.findOneAndUpdate({ "_id": req.params.cartId }, {
-        $set: { "items.$[element].quantity": req.body.quantity }
+        $inc: { "items.$[element].quantity": 1 }
+    },
+        {
+            arrayFilters: [{ "element.productId": req.params.productId }],
+            new: true
+        }, (err, cart) => {
+            if (err) res.status(403).send(err);
+            res.send(cart);
+        })
+}
+
+exports.decreaseQuantity = (req, res) => {
+    Cart.findOneAndUpdate({ "_id": req.params.cartId }, {
+        $inc: { "items.$[element].quantity": -1 }
     },
         {
             arrayFilters: [{ "element.productId": req.params.productId }],
