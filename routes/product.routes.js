@@ -41,7 +41,7 @@ router.get("/chart/productCategories",products.getProductCategories);//
 router.delete("/:id", products.deleteProduct);//
 router.put("/:productId/:reviewId", products.deleteReview);  
 router.post("/filter",  products.getAllProductFilter);  
-router.post("/search/:names",  products.getproductname);
+router.post("/search",  products.getproductname);
 
 ////////////////////
 router.post("/model",  products.AddmodelElec);
