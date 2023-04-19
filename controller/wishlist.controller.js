@@ -15,7 +15,7 @@ exports.createWishList = (req, res) => {
             const item = wishlist.items.find(elem => elem.productId == req.body.items.productId)
             if (item) {
                 res.status(401).send({
-                    msg: "this item is added you can't adds it..."
+                    msg: "this item is already added ...!"
                 })
             } else {
                 WishList.findOneAndUpdate({
@@ -81,7 +81,7 @@ exports.getUserLists = (req, res) => {
         if (wishlist) {
             res.status(201).json(wishlist)
         }
-    })
+    }).populate("items.productId")
 }
 
 
