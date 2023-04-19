@@ -449,15 +449,18 @@ exports.getAllProductFilter = async (req, res) => {
 };
 
 exports.getproductname = (req, res) => {
-  var fpro = [];
-  Product.find({})
+
+  const symbolsRegex = /[.*+?^${}()|[\]\\]/g;
+    const searchObject = req.body.search && {
+      $regex: req.body.search.replace(symbolsRegex, "\\$&"),
+      $options: "i",
+    };
+
+
+  Product.find({ ...(req.body.search && { name: searchObject }) })
     .then((pro) => {
-      pro.forEach((p) => {
-        if (p.name.replace(/ .*/, "") === req.params.names) {
-          fpro.push(p);
-        }
-      });
-      res.send(fpro);
+      
+      res.send(pro);
     })
     .catch((err) =>
       res.status(400).send([err, { message: "something wrong" }])
