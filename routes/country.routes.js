@@ -12,7 +12,7 @@ const verfiy =require("../controller/verifyTokenapi.controller.js");
 // router.post("/pagination",  countries.getAllCountrypagination);
 
 
-//without verfiy
+// without verfiy
 router.post("/",  countries.addCountry);
 router.get("/", countries.getCountries);
 router.get("/:id",countries.getCountry);

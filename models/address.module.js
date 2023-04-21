@@ -5,6 +5,16 @@ const addressSchema = new mongoose.Schema(
         userId: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',
+            unique:true
+        },
+        details:{
+            type: String
+        },
+        fullName:{
+            type: String
+        },
+        phone:{
+            type: String
         },
         country:{
             type: String,

@@ -6,6 +6,9 @@ exports.addAddress = (req, res) => {
         country: req.body.country,
         city: req.body.city,
         governate: req.body.governate,
+        details:req.body.details,
+        fullName:req.body.fullName,
+        phone:req.body.phone,
         isdefault:req.body.isdefault
     })
     newAddress.save().then((address) => {
