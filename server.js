@@ -17,13 +17,27 @@ const couponRoute = require('./routes/coupon.routes.js')
 const sellerRoute = require('./routes/seller.routes')
 const fileRoutes = require('./routes/upload.routes');
 const path = require('path');
+
 const cors = require("cors");
 const dotenv = require("dotenv");
+
+const bodyparser= require('body-parser')
+const stripeRoute = require('./routes/stripe.routes.js');
+
 dotenv.config();
 
-app.use(cors());
+app.use(cors({origin:true,credentials:true})); //updated for stripe
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+
+
+app.use(express.static('puplic'))
+app.use(bodyparser.urlencoded({extended:false}))
+app.use(bodyparser.json());
+const stripe =require ('stripe')(process.env.STRIPE_CLIENT_SECRET)
+
+
 
 app.use('/api', fileRoutes.routes);
 app.use("/api/auth", authRoute);
@@ -40,10 +54,7 @@ app.use("/api/payment", paypalRoute);
 app.use("/api/address", addressRoute);
 app.use("/api/coupon",couponRoute);
 app.use("/api/seller",sellerRoute);
-
-
-    const paypalCtrl = require('./controller/paypal.controller.js');
-app.get("/success",paypalCtrl.success)
+app.use("/api/checkout",stripeRoute);
 
 
 app.listen(process.env.PORT || 5000, () => {
