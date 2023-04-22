@@ -20,6 +20,7 @@
     "nodemon": "^2.0.14",
     "paypal-rest-sdk": "^1.8.1",
     "@paypal/checkout-server-sdk": "^1.0.3",
+    "stripe": "^12.1.1",
     "validator": "^13.6.0"
   }
 }
