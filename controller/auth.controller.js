@@ -93,7 +93,7 @@ exports.login = (req, res) => {
                     id: user._id, isAdmin: user.isAdmin,
                     name: user.name, email: user.email
                 },
-                    process.env.JWT_SEC, { expiresIn: "3d" });
+                    process.env.JWT_SEC, { expiresIn: "10d" });
                 jwt.verify(userToken, process.env.JWT_SEC, (err, userData) => {
                     if (userData) {
                         console.log(userData)
