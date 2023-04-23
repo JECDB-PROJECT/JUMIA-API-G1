@@ -11,7 +11,6 @@ const wishlistRoute = require('./routes/wishlist.routes.js');
 const countryRoute = require('./routes/country.routes.js');
 const governateRoute = require('./routes/governate.routes.js');
 const cityRoute = require('./routes/city.routes.js');
-const paypalRoute = require('./routes/paypal.routes.js');
 const addressRoute = require('./routes/address.routes.js');
 const couponRoute = require('./routes/coupon.routes.js')
 const sellerRoute = require('./routes/seller.routes')
@@ -50,7 +49,6 @@ app.use("/api/wishlist", wishlistRoute);
 app.use("/api/country", countryRoute);
 app.use("/api/governate", governateRoute);
 app.use("/api/city", cityRoute);
-app.use("/api/payment", paypalRoute);
 app.use("/api/address", addressRoute);
 app.use("/api/coupon",couponRoute);
 app.use("/api/seller",sellerRoute);
