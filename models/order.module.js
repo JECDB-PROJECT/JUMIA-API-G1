@@ -5,12 +5,6 @@ const orderSchema = new mongoose.Schema(
     {
         userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
         cartId: { type: mongoose.Schema.Types.ObjectId, ref: 'Cart' },
-        orderItems: [{
-            productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product' },
-            quantity: { type: Number },
-            price: { type: Number },
-            sellerId:{ type:String}
-        }],
         shippingAddress: {
             country: { type: String },
             fullName: { type: String },
@@ -22,7 +16,7 @@ const orderSchema = new mongoose.Schema(
             type: String,
             default: 'CashOnDelivery'
         },
-        shippingPrice: { type: Number },
+        shippingPrice: { type: Number ,  default: 50  },
         taxPrice: { type: Number },
         totalPrice: { type: Number },
         isPaid: { type: Boolean, default: false },
