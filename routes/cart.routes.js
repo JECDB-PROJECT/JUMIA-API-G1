@@ -9,8 +9,9 @@ router.get("/", verify.verifyToken, cart.getCartItems);
 router.get("/userCart", verify.verifyToken, cart.getCart);
 router.put("/increaseQuantity/:cartId/:productId", verify.verifyToken, cart.increaseQuantity);
 router.put("/decreaseQuantity/:cartId/:productId", verify.verifyToken, cart.decreaseQuantity);
-router.delete("/:cartId/:productId", verify.verifyToken, cart.deleteItemFromCart);
 router.delete("/deleteCart/:cartId", cart.removeCart);
+router.delete("/:cartId/:productId", verify.verifyToken, cart.deleteItemFromCart);
+
 
 //without verify
 // router.post("/addToCart", cart.addToCart);

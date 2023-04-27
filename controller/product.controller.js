@@ -138,13 +138,35 @@ exports.deleteProduct = async (req, res) => {
 
 //GET PRODUCT
 exports.getProduct = async (req, res, next) => {
-  var { id } = req.params;
-  try {
-    var myTodo = await Product.findOne({ _id: id });
-    res.json(myTodo);
-  } catch (err) {
-    res.json({ message: err.message });
-  }
+  // console.log("getProduct",req.params)
+  if (req.headers.lang == 'ar') {
+    Product.findOne({ _id: req.params.id }, {
+        name: 0,
+        category: 0,
+        subcategory: 0,
+        description: 0
+    })
+    .populate('sellerId')
+    .exec(function (err, prd) {
+        if (err) res.send(err);
+        res.status(200).send(prd)
+    })
+    
+} else {
+    Product.findOne({ _id: req.params.id }, {
+        arname: 0,
+        arcategory: 0,
+        arsubcategory: 0,
+        ardescription: 0
+    })
+    .populate('sellerId')
+        .exec(function (err, prd) {
+            if (err) res.send(err);
+            res.status(200).send(prd)
+        })
+    
+
+}
 
   
 };
@@ -317,27 +339,44 @@ exports.deleteReview = (req, res, next) => {
 //GET PRODUCTS OF SPECEIFIC CATEGORY
 
 exports.getProductsOfCategory = async (req, res) => {
-  console.log("test getProductsOfCategory..");
-  console.log(req.params.category);
   const qCategory = req.params.category;
   let products;
   try {
     if (qCategory) {
-      products = await Product.find({ category: qCategory });
+      if (req.headers.lang == "ar") {
+        products = await Product.find(
+          { $or: [{ category: qCategory }, { arcategory: qCategory }] },
+          {
+            name: 0,
+            category: 0,
+            subcategory: 0,
+            description: 0,
+          }
+        );
+        console.log(products);
+      } else {
+        products = await Product.find(
+          { $or: [{ category: qCategory }, { arcategory: qCategory }] },
+          {
+            arname: 0,
+            arcategory: 0,
+            arsubcategory: 0,
+            ardescription: 0,
+          }
+        );
+      }
     } else {
-      res.status(500).json("there's problem please try again...");
+      res.status(500).json("there's problem please try again..");
     }
-    console.log(products);
     res.status(200).json(products);
   } catch (err) {
-    res.status(500).json(err);
+    res.status(500).send({ message: "something wrong" });
   }
 };
 
 //GET PRODUCTS OF SP SUBCATEGORY
 exports.getProductsOfSubCategory = async (req, res) => {
   const subCat = req.params.subCategory;
-  console.log(subCat);
   let products;
   try {
     if (subCat) {

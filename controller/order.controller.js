@@ -111,11 +111,10 @@ exports.createOrder = (req, res) => {
     Cart.findOne({ userId: req.user.id }, (err, cart) => {
         if (err) { res.status(400).send("Cart Is Not Found...") }
         if (cart) {
-            if (req.body.paymentmethod === 'PayPal') {
+            if (req.body.paymentmethod === 'stripe') {
                 var newOrder = new Order({
                     userId: req.user.id,
                     cartId: cart._id,
-                    orderItems: cart.items,
                     shippingAddress: req.body.shippingAddress,
                     paymentmethod: req.body.paymentmethod,
                     shippingPrice: req.body.shippingPrice,
