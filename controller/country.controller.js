@@ -22,8 +22,8 @@ exports.addCountry = (req, res) => {
 }
 
 exports.getCountries = (req, res) => {
-    // if (req.user.isAdmin) {
-        if (true) {
+    if (false) {
+        // if (true) {
         Country.find({}, (err, countries) => {
             if (countries) {
                 res.status(200).send(countries)
@@ -57,8 +57,8 @@ exports.getCountries = (req, res) => {
 }
 
 exports.getCountry = (req, res) => {
-    // if (req.user.isAdmin) {
-        if (true) {
+    if (req) {
+        // if (true) {
         console.log("getCountry", req.params.id)
         Country.findOne({ _id: req.params.id }, (err, country) => {
             if (err) { res.status(200).send(err) };
