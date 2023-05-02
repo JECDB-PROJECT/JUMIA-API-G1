@@ -14,8 +14,8 @@ router.post('/admin',users.adminLogin);
 router.get('/logout', users.logout);
 
 //SELLER
-router.post('/seller/pro/signup' ,express.static(path.join(__dirname, 'uploads')), upload.single('files'), users.sellerSignUp);
-router.post('/seller/pro/login', users.sellerLogin);
+router.post('/seller/signup' ,express.static(path.join(__dirname, 'uploads')), upload.single('files'), users.sellerSignUp);
+router.post('/seller/login', users.sellerLogin);
 //GOOGLE
 router.post('/google/signup', users.googleSignUp);
 router.post('/google/login', users.googleLogin);

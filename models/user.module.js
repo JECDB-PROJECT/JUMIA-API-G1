@@ -7,7 +7,11 @@ const userSchema = new mongoose.Schema({
     phone: { type: String },
     password: { type: String },
     isAdmin: { type: Boolean, default: false, required: true },
-    isSeller: { type: Boolean, default: false, required: true }
+    isSeller: { type: Boolean, default: false, required: true },
+    shop:{
+        shopName: { type: String},
+        description: { type: String}
+    },
  
 }, {
     timestamps: true,
