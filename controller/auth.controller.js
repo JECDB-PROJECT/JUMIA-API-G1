@@ -1,3 +1,4 @@
+"use strict";
 const User = require("../models/user.module.js");
 const bcrypt = require('bcrypt');
 const validator = require('validator');
@@ -151,37 +152,22 @@ exports.logout = (req, res) => {
 ///SELLER SIGNUP
 const fileSizeFormatter = (bytes, decimal) => {
     if (bytes === 0) {
-        return '0 Bytes';
+        return "0 Bytes";
     }
     const dm = decimal || 2;
-    const sizes = ['Bytes', 'KB', 'MB'];
+    const sizes = ["Bytes", "KB", "MB"];
     const index = Math.floor(Math.log(bytes) / Math.log(1000));
-    return parseFloat((bytes / Math.pow(1000, index)).toFixed(dm)) + ' ' + sizes[index];
-
-}
+    return (
+        parseFloat((bytes / Math.pow(1000, index)).toFixed(dm)) + " " + sizes[index]
+    );
+};
 
 exports.sellerSignUp = (req, res, next) => {
-    const filesPath = [];
-    const filesArray = [];
-    req.files.forEach(element => {
-        const file = {
-            fileName: element.originalname,
-            filePath: element.path,
-            fileType: element.mimetype,
-            fileSize: fileSizeFormatter(element.size, 2)
-        }
-        filesArray.push(file);
-        filesPath.push(element.path);
-    });
-    const multipleFiles = new MultipleFile({
-        files: filesArray
-    });
-    multipleFiles.save();
-    console.log(req.body)
+    console.log("iiiiiiiiiii");
     let validEmail = validator.isEmail(req.body.email);
     let validPass = validator.isStrongPassword(req.body.password);
     let validPhone = validator.isMobilePhone(req.body.phone, ['ar-EG']);
-    if (validEmail && validPass && validPhone) {
+    if (req.body.email) {
         console.log(req.body)
         User.findOne({ email: req.body.email })
             .then(user => {
@@ -198,7 +184,6 @@ exports.sellerSignUp = (req, res, next) => {
                         // shop:req.body.shop
                         shop: {
                             shopName: req.body.shopName,
-                            logo: filesPath,
                             description: req.body.description
                         }
                     })
